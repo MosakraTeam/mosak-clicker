@@ -12,9 +12,45 @@ local physics = require( "physics" )
 physics.start()
 physics.setGravity( 0, 0 )
 
--- Configure image sheet
+-- Configure image sheets
+local mosakSheetOptions =
+{
+    frames =
+    {
+		{   -- idle 1
+            x = 3,
+            y = 6,
+            width = 25,
+            height = 54
+        },
+        {   -- idle 2
+            x = 40,
+            y = 6,
+            width = 25,
+            height = 54
+        },
+        {   -- idle 3
+            x = 76,
+            y = 6,
+            width = 25,
+            height = 54
+        }
+    },
+}
 
+local mosakSheet = graphics.newImageSheet( "mosakSheet.png", mosakSheetOptions )
 
+-- Configure image sequences
+local mosakSequences = {
+    -- non-consecutive frames sequence
+    {
+        name = "idle",
+        frames = { 1,2,3,2 },
+        time = 2000,
+        loopCount = 0,
+        loopDirection = "forward"
+    }
+}
 
 -- Initialize variables
 
@@ -47,6 +83,14 @@ function scene:create( event )
 	background.y = display.contentCenterY
 	background.width = display.actualContentWidth
     background.height = display.actualContentHeight
+
+	local mosak = display.newSprite(mainGroup, mosakSheet, mosakSequences)
+	mosak:scale(15,15)
+	mosak.x = display.contentCenterX
+	mosak.y = 1300
+
+	mosak:setSequence( "idle" )  -- switch to "idle" sequence
+    mosak:play()  -- play the new sequence
 end
 
 
