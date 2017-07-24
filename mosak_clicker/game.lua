@@ -17,23 +17,105 @@ local mosakSheetOptions =
 {
     frames =
     {
-		{   -- idle 1
+		{   -- 1. idle 1
             x = 3,
             y = 6,
             width = 25,
-            height = 54
+            height = 54,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 25,
+            sourceHeight = 54
         },
-        {   -- idle 2
+        {   -- 2. idle 2
             x = 40,
             y = 6,
             width = 25,
-            height = 54
+            height = 54,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 25,
+            sourceHeight = 54
         },
-        {   -- idle 3
+        {   -- 3. idle 3
             x = 76,
             y = 6,
             width = 25,
-            height = 54
+            height = 54,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 25,
+            sourceHeight = 54
+        },
+        {   -- 4. swordAxeAttack 1
+            x = 9,
+            y = 293,
+            width = 33,
+            height = 58,
+			sourceX = 3,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 5. swordAxeAttack 2
+            x = 56,
+            y = 293,
+            width = 36,
+            height = 58,
+			sourceX = 0,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 6. swordAxeAttack 3
+            x = 103,
+            y = 293,
+            width = 31,
+            height = 58,
+			sourceX = 5,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 7. swordAxeAttack 4
+            x = 146,
+            y = 293,
+            width = 55,
+            height = 58,
+			sourceX = 1,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 8. swordAxeAttack 5
+            x = 218,
+            y = 293,
+            width = 53,
+            height = 58,
+			sourceX = 1,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 9. swordAxeAttack 6
+            x = 279,
+            y = 293,
+            width = 53,
+            height = 58,
+			sourceX = 1,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
+        },
+        {   -- 10. swordAxeAttack 7
+            x = 339,
+            y = 293,
+            width = 36,
+            height = 58,
+			sourceX = 5,
+            sourceY = 0,
+            sourceWidth = 56,
+            sourceHeight = 58
         }
     },
 }
@@ -49,15 +131,53 @@ local mosakSequences = {
         time = 2000,
         loopCount = 0,
         loopDirection = "forward"
+    },
+	{
+        name = "swordAxeAttack",
+        frames = { 4,5,6,7,8,9,10 },
+        time = 1000,
+        loopCount = 1,
+        loopDirection = "forward"
     }
 }
 
 -- Initialize variables
 
-
+local mosak
+local isAttacking = true
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
+
+--mosakAttackListener()
+function mosakAttackListener( event )
+
+	if ( event.phase == "began" ) then 
+		isAttacking = false
+	elseif ( event.phase == "ended" ) then 
+		isAttacking = true
+		mosak.y = mosak.y + 25
+		mosak.x = mosak.x - 10
+        mosak:setSequence( "idle" )  -- switch to "idle" sequence
+        mosak:play()  -- play the new sequence
+		mosak:removeEventListener("sprite",mosakAttackListener)
+    end
+
+end
+
+--attackFunction()
+function attackFunction()
+	if isAttacking then
+
+		mosak.y = mosak.y - 25
+		mosak.x = mosak.x + 10
+		mosak:setSequence( "swordAxeAttack" )  -- switch to "swordAxeAttack" sequence
+		mosak:play()  -- play the new sequence
+
+		mosak:addEventListener("sprite",mosakAttackListener)
+	end
+
+end
 
 -- create()
 function scene:create( event )
@@ -84,10 +204,10 @@ function scene:create( event )
 	background.width = display.actualContentWidth
     background.height = display.actualContentHeight
 
-	local mosak = display.newSprite(mainGroup, mosakSheet, mosakSequences)
-	mosak:scale(15,15)
-	mosak.x = display.contentCenterX
-	mosak.y = 1300
+	mosak = display.newSprite(mainGroup, mosakSheet, mosakSequences)
+	mosak:scale(10,10)
+	mosak.x = 250
+	mosak.y = 1325
 
 	mosak:setSequence( "idle" )  -- switch to "idle" sequence
     mosak:play()  -- play the new sequence
@@ -146,6 +266,8 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
+
+Runtime:addEventListener( "touch", attackFunction )
 -- -----------------------------------------------------------------------------------
 
 return scene
